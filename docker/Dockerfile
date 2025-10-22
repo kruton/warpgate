@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.3-labs
 # hadolint global ignore=DL3008
-FROM rust:1.85.0-bullseye@sha256:0fdb1727a6c81e0811df9d67bd6defa9a4a07d2a44373ab0a017aedad9fcba3f AS build
+FROM rust:1.90.0-bullseye@sha256:73a92cf6b24320e587205583c29f79d7550ca4583552447428a275cacc0ae8df AS build
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -26,7 +26,7 @@ RUN just npm ci \
     && just npm run build \
     && cargo build --features mysql,postgres --release
 
-FROM debian:bullseye-20250520@sha256:cf48c31af360e1c0a0aedd33aae4d928b68c2cdf093f1612650eb1ff434d1c34
+FROM debian:bullseye-20250929@sha256:904fc306b169f64ab80672d58e77ecbd06e605dd2c137f6e1f38ee8dc0f2ae22
 LABEL maintainer=heywoodlh
 ARG USER_ID=1000
 
@@ -47,7 +47,7 @@ COPY --from=build /opt/warpgate/target/release/warpgate /usr/local/bin/warpgate
 
 VOLUME /data
 
-HEALTHCHECK CMD warpgate healthcheck
+HEALTHCHECK CMD warpgate --config /data/warpgate.yaml healthcheck
 
 ENV DOCKER=1
 
